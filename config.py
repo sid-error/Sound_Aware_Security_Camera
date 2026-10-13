@@ -1,8 +1,8 @@
 """
 All tunable settings for Sound Sentry in one place.
 
-Camera, microphone geometry and motor calibration values are taken from
-sound_tracker.py (the reference implementation) so behaviour stays the same.
+Camera, microphone geometry and motor calibration values are measured on the
+physical build; re-measure them if anything is moved.
 """
 
 import os
@@ -17,8 +17,8 @@ SUSPICIOUS_THRESHOLD = 0.60      # P(suspicious) needed to count as a detection
 CONSECUTIVE_HITS = 1             # windows in a row above threshold before acting
 
 # ---------------- Audio ----------------
-AUDIO_DEVICE = 0                 # Google voiceHAT / ReSpeaker card (hw:2,0)
-SAMPLE_RATE = 48000              # hardware native rate (same as sound_tracker.py)
+AUDIO_DEVICE = 0                 # index of the I2S microphone input (see --list-devices)
+SAMPLE_RATE = 48000              # hardware native rate
 CHANNELS = 2                     # column 0 = left mic, column 1 = right mic
 BLOCK_SIZE = 4800                # 0.1 s per callback
 HOP_SECONDS = 0.5                # classify a new 1 s window every 0.5 s
@@ -27,13 +27,13 @@ HOP_SECONDS = 0.5                # classify a new 1 s window every 0.5 s
 WARMUP_SECONDS = 1.0
 
 # Loudness gate. Required: the model scores silence/quiet input as "suspicious",
-# so quiet windows must never reach it. Same value as sound_tracker.py.
+# so quiet windows must never reach it.
 RMS_GATE = 0.05
 
 # ---------------- Direction of arrival ----------------
 MIC_DISTANCE = 0.25              # metres between the two microphones
 SOUND_SPEED = 343.0              # m/s
-DOA_SEGMENT = 16384              # samples used for TDOA (same block as sound_tracker.py)
+DOA_SEGMENT = 16384              # samples used for TDOA
 
 # ---------------- Camera ----------------
 CAMERA_IP = "172.17.137.93"

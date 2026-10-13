@@ -11,6 +11,7 @@ Sound Sentry continuously listens through two microphones, classifies every soun
 - [Overview](#overview)
 - [How It Works](#how-it-works)
 - [Hardware Requirements](#hardware-requirements)
+- [Wiring & Pin Configuration](#wiring--pin-configuration)
 - [Software Requirements](#software-requirements)
 - [Project Structure](#project-structure)
 - [Installation](#installation)
@@ -106,9 +107,9 @@ The processing pipeline runs **every 0.5 s** on the most recent **1 s** of stere
 | Component | Details |
 |---|---|
 | **Computer** | Raspberry Pi (64-bit Raspberry Pi OS, kernel 6.x) — Pi 4B or Pi 5 recommended |
-| **Microphones** | 2-channel stereo sound card (e.g., Google voiceHAT, ReSpeaker 2-mic HAT); two microphones **25 cm apart** |
+| **Microphones** | Two **INMP441** I2S MEMS microphone modules (left + right), wired to the Pi GPIO header via a breadboard, **25 cm apart**. See [Wiring & Pin Configuration](#wiring--pin-configuration) |
 | **Camera** | TP-Link **TL-SC4171G** Wireless Pan/Tilt IP camera (HTTP CGI control via `/cgi-bin/operator/ptzset`) |
-| **Network** | Camera and Raspberry Pi on the **same LAN** (direct Ethernet or same Wi-Fi) |
+| **Network** | Camera connected to the Raspberry Pi with an **Ethernet cable** (same subnet as `CAMERA_IP`) |
 | **Mounting** | Camera, microphones, and Pi mounted rigidly together so the entire unit moves as one piece |
 
 > **Important:** The camera, microphones, and Pi must be fixed relative to each other. The DOA calibration (`MIC_DISTANCE`, pan-speed values) are only valid for one physical configuration. If anything shifts, recalibrate.
@@ -125,6 +126,41 @@ The processing pipeline runs **every 0.5 s** on the most recent **1 s** of stere
 | `GET /cgi-bin/operator/ptzset?move=left&move=repeat` | Start continuous left pan |
 | `GET /cgi-bin/operator/ptzset?move=stop` | Stop motor |
 | `GET /cgi-bin/operator/ptzset?gotoserverpresetno=N` | Go to saved preset N |
+
+---
+
+## Wiring & Pin Configuration
+
+The two microphones are **INMP441** MEMS microphone modules (I2S, 3.3V). All pin numbers below are **physical board pin numbers** on the Raspberry Pi 40-pin header.
+
+**Breadboard layout:** the `SCK`, `WS` and `SD` pins of both microphones share one breadboard row each, and each of those rows is wired to a single Pi pin. `VDD` of each mic goes to a 3.3V pin and `GND` of each mic goes to a ground pin. The `L/R` pin selects the channel: one mic has `L/R` tied to its own `VDD` row, the other has it tied to its own `GND` row.
+
+| Mic pin | Mic 1 (Left ear) | Mic 2 (Right ear) |
+|---|---|---|
+| `VDD` | Pi Pin 1 (3.3V) | Pi Pin 17 (3.3V) |
+| `GND` | Pi Pin 6 (GND) | Pi Pin 9 (GND) |
+| `L/R` | Tied to Mic 1's `GND` row → **left** channel | Tied to Mic 2's `VDD` row → **right** channel |
+| `SCK` | Shared row → Pi Pin 12 | Same shared row as Mic 1 → Pi Pin 12 |
+| `WS` | Shared row → Pi Pin 35 | Same shared row as Mic 1 → Pi Pin 35 |
+| `SD` | Shared row → Pi Pin 38 | Same shared row as Mic 1 → Pi Pin 38 |
+
+**Shared I2S bus connections to the Pi:**
+
+| Signal | Pi Pin | Function |
+|---|---|---|
+| `SCK` | 12 | Bit clock |
+| `WS` | 35 | Word select (left/right frame clock) |
+| `SD` | 38 | Serial data |
+
+`L/R` tied low puts a mic on the left channel (column 0) and tied high puts it on the right channel (column 1), matching the [microphone geometry](#hardware-requirements) convention above. If left and right turn out swapped, swap the two `L/R` ties.
+
+### I2S overlay setup
+
+> **TODO:** I2S overlay configuration to be added later.
+
+### Camera connection
+
+The PTZ camera is connected to the Raspberry Pi with an **Ethernet cable**. Set `CAMERA_IP` in `config.py` to the camera's address and confirm the Pi can reach it with `ping <CAMERA_IP>`.
 
 ---
 
@@ -165,7 +201,7 @@ sudo apt install portaudio19-dev   # Debian/Raspberry Pi OS
 ## Project Structure
 
 ```
-sound_sentry/
+Sound_Aware_Security_Camera/
 │
 ├── main.py                          # Entry point: audio loop + decision pipeline
 ├── classifier.py                    # TFLite model wrapper (YAMNet + dense head)
@@ -179,7 +215,6 @@ sound_sentry/
 │   └── sentry_end_to_end_quantized.tflite   # Quantised TFLite model (~3.7 MB)
 │
 ├── requirements.txt
-├── REPORT_PROMPT.md                 # Project report writing guide (academic)
 └── README.md                        # This file
 ```
 
@@ -190,8 +225,8 @@ sound_sentry/
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url> sound_sentry
-cd sound_sentry
+git clone <your-repo-url> Sound_Aware_Security_Camera
+cd Sound_Aware_Security_Camera
 ```
 
 ### 2. (Recommended) Create a virtual environment
@@ -222,7 +257,7 @@ pip install numpy scipy sounddevice requests
 python3 main.py --list-devices
 ```
 
-Note the index of your stereo microphone card and set `AUDIO_DEVICE` in `config.py`.
+Note the index of your I2S microphone input (the two INMP441 mics appear as one 2-channel device) and set `AUDIO_DEVICE` in `config.py`.
 
 ### 5. Calibrate the microphones (optional but recommended)
 
@@ -235,7 +270,7 @@ Follow the on-screen instructions (clap in front, far left, far right). See [doa
 ### 6. Configure camera settings
 
 Edit `config.py` and set:
-- `CAMERA_IP` — the IP address of the TP-Link camera
+- `CAMERA_IP` — the IP address of the TP-Link camera (the Pi must reach it over the Ethernet link)
 - `USERNAME`, `PASSWORD` — camera credentials (default: `admin`/`admin`)
 - `MIC_DISTANCE` — actual physical distance in metres between the two microphones
 
@@ -614,13 +649,13 @@ This is acceptable because the camera's ~53° field of view still covers the sou
 ## Troubleshooting
 
 **`FileNotFoundError: Model not found: models/sentry_end_to_end_quantized.tflite`**  
-Run from the `sound_sentry/` directory, or update `MODEL_PATH` in `config.py`.
+Run from the project root directory, or update `MODEL_PATH` in `config.py`.
 
 **Model loads but all sounds score ~0.9 (always suspicious)**  
 The audio window reaching the model is very quiet. Check that `RMS_GATE` is set correctly and that `sounddevice` is capturing the right device (`--list-devices`).
 
 **Camera shows `NOT reachable`**  
-Check `CAMERA_IP`, `USERNAME`, `PASSWORD` in `config.py`. Ensure the Pi and camera are on the same network. Try `ping 172.17.137.93` from the Pi.
+Check `CAMERA_IP`, `USERNAME`, `PASSWORD` in `config.py`. Check the Ethernet cable between the Pi and camera is seated, and ensure they are on the same network. Try `ping 172.17.137.93` from the Pi.
 
 **Camera moves to the wrong angle**  
 Recalibrate `PAN_SPEED_RIGHT` and `PAN_SPEED_LEFT` for your camera's current `PTZ.Speed.PanSpeed` setting. The values in `config.py` were measured at `PanSpeed=100`.
@@ -658,4 +693,4 @@ Ensure PortAudio is installed: `sudo apt install portaudio19-dev libportaudio2`.
 
 ---
 
-*Built for an AI-robotics course project. See `REPORT_PROMPT.md` for the full academic report writing guide.*
+*Built for an AI-robotics course project.*

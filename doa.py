@@ -1,13 +1,12 @@
 """
 Direction of arrival from two microphones.
 
-Same geometry and sign convention as sound_tracker.py
+Geometry and sign convention:
     lag > 0  ->  left channel is delayed  ->  angle > 0  ->  camera turns right
     angle = arcsin(c * dt / d)
 
-Differences from the reference:
-    * GCC-PHAT (FFT based) instead of np.correlate: O(N log N) instead of O(N^2)
-      and more robust to room reverberation.
+Method:
+    * GCC-PHAT (FFT based): O(N log N) and robust to room reverberation.
     * Only physically possible lags (+/- d/c seconds) are searched.
     * Parabolic interpolation around the peak gives sub-sample resolution.
     * The loudest DOA_SEGMENT samples of the detection window are used, so the
