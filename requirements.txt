@@ -1,0 +1,5 @@
+numpy
+scipy
+sounddevice
+requests
+tensorflow  # or: ai-edge-litert (lighter, used automatically if installed)

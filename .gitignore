@@ -1,0 +1,146 @@
+# ============================================================
+# Sound Sentry — .gitignore
+# Python / Raspberry Pi / TensorFlow Lite / edge-AI project
+# ============================================================
+
+# ------------------------------------------------------------
+# Python bytecode & caches
+# ------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# ------------------------------------------------------------
+# Virtual environments
+# ------------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+.env/
+.ENV/
+
+# ------------------------------------------------------------
+# Distribution / packaging
+# ------------------------------------------------------------
+build/
+dist/
+*.egg-info/
+*.egg
+MANIFEST
+.eggs/
+wheels/
+
+# ------------------------------------------------------------
+# pip / setuptools
+# ------------------------------------------------------------
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ------------------------------------------------------------
+# Unit test / coverage
+# ------------------------------------------------------------
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache/
+.pytest_cache/
+htmlcov/
+*.cover
+nosetests.xml
+coverage.xml
+
+# ------------------------------------------------------------
+# Jupyter Notebooks (checkpoints only; keep .ipynb in git)
+# ------------------------------------------------------------
+.ipynb_checkpoints/
+
+# ------------------------------------------------------------
+# TensorFlow / ML artefacts
+# ------------------------------------------------------------
+# Keep the committed quantised model; ignore anything generated
+# locally (full checkpoints, SavedModels, TensorBoard logs, etc.)
+*.h5
+*.hdf5
+*.keras
+*.pb
+saved_model/
+checkpoint/
+logs/
+runs/
+tensorboard/
+mlruns/
+
+# If you want to exclude the large TFLite model from git and
+# distribute it separately, uncomment the next line:
+# models/*.tflite
+
+# ------------------------------------------------------------
+# Audio / test files (potentially large)
+# ------------------------------------------------------------
+# WAV files used with --file flag; not part of source
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.aac
+
+# ------------------------------------------------------------
+# Snapshots and images captured from the camera
+# ------------------------------------------------------------
+snapshots/
+*.jpg
+*.jpeg
+*.png
+*.bmp
+
+# ------------------------------------------------------------
+# Raspberry Pi / Linux system files
+# ------------------------------------------------------------
+*.swp
+*.swo
+*~
+.DS_Store           # macOS (if working cross-platform)
+Thumbs.db           # Windows
+Desktop.ini
+
+# ------------------------------------------------------------
+# IDE / editor settings
+# ------------------------------------------------------------
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+.spyproject/
+.ropeproject/
+
+# ------------------------------------------------------------
+# Environment / secrets (never commit credentials)
+# ------------------------------------------------------------
+.env
+.env.*
+*.env
+secrets.py
+secrets.yaml
+secrets.json
+
+# ------------------------------------------------------------
+# Logs and session output
+# ------------------------------------------------------------
+*.log
+*.out
+session_*.txt
+
+# ------------------------------------------------------------
+# Miscellaneous
+# ------------------------------------------------------------
+*.bak
+*.tmp
+*.orig
+tmp/
+temp/
+scratch/
