@@ -6,6 +6,27 @@ Sound Sentry continuously listens through two microphones, classifies every soun
 
 ---
 
+**Course:** 23CSE472 – Artificial Intelligence and Robotics
+
+**Department:** Department of Computer Science and Engineering
+
+**Institution:** School of Computing, Amrita Vishwa Vidyapeetham, Coimbatore, India
+
+**Mentor:** Dr. A. Baskar
+
+### PROJECT TEAM
+
+| Name | Registration Number |
+|---|---|
+| Amal Godwin J | CB.SC.U4CSE23407 |
+| Haridev P | CB.SC.U4CSE23417 |
+| Keshav RamPrakash | CB.SC.U4CSE23425 |
+| Prajan Karthik | CB.SC.U4CSE23439 |
+| Sidharth S Nair | CB.SC.U4CSE23443 |
+| Manu Santhosh | CB.SC.U4CSE23729 |
+
+---
+
 ## Table of Contents
 
 - [Overview](#overview)
@@ -693,4 +714,4 @@ Ensure PortAudio is installed: `sudo apt install portaudio19-dev libportaudio2`.
 
 ---
 
-*Built for an AI-robotics course project.*
+*Sound Sentry — Built for 23CSE472 Artificial Intelligence and Robotics, School of Computing, Amrita Vishwa Vidyapeetham, Coimbatore. Mentored by Dr. A. Baskar.*
