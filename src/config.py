@@ -7,7 +7,7 @@ physical build; re-measure them if anything is moved.
 
 import os
 
-PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # ---------------- Model ----------------
 MODEL_PATH = os.path.join(PROJECT_DIR, "models", "sentry_end_to_end_quantized.tflite")
